@@ -16,4 +16,6 @@ public interface TodoAssignDao {
     void remove(List<Long> ids) throws IOException, DBServiceException;
 
     void removeByTodoIds(List<Long> ids) throws IOException, DBServiceException;
+
+    void removeByUserIds(List<Long> ids) throws IOException, DBServiceException;
 }

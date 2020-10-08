@@ -32,6 +32,9 @@ public class TodoAssignEntity implements Serializable {
     private Integer type;
     @SerializedName("state")
     private Integer state;
+    @Setter
+    @SerializedName("verified_at")
+    private Long verifiedAt;
 
     public void complete() throws InconsistentStateException {
         if(this.type != TodoType.TODO.ordinal() || this.state != AssignState.PENDING.ordinal()) {

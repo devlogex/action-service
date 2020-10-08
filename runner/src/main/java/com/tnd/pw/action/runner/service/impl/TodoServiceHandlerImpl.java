@@ -133,7 +133,7 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
     }
 
     @Override
-    public TodoRepresentation updateTodo(ActionRequest request) throws DBServiceException, TodoNotFoundException, IOException, TodoAssignNotFoundException {
+    public TodoRepresentation updateTodo(ActionRequest request) throws DBServiceException, TodoNotFoundException, IOException {
         TodoEntity todoEntity = todoService.getTodo(
                 TodoEntity.builder()
                         .id(request.getId())
@@ -158,7 +158,10 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
                                 .todoId(todoEntity.getId())
                                 .build()
                 );
-                List<Long> userIds = todoAssigns.stream().map(TodoAssignEntity::getUserId).collect(Collectors.toList());
+                List<Long> userIds = todoAssigns.stream()
+                        .map(TodoAssignEntity::getUserId)
+                        .collect(Collectors.toList());
+
                 HashSet<Long> oldIds = new HashSet<>();
                 HashSet<Long> newIds = new HashSet<>();
                 newIds.addAll(request.getAssignees());
@@ -182,7 +185,7 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
                     }
                 }
                 if(removeIds.size() > 0) {
-                    todoService.removeTodoAssign(removeIds);
+                    todoService.removeTodoAssignByUserIds(removeIds);
                 }
             } catch (TodoAssignNotFoundException e) {
                 for(Long id: request.getAssignees()) {
@@ -201,7 +204,15 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
             }
         }
         todoService.updateTodo(todoEntity);
-        List<TodoAssignEntity> assignEntities = todoService.getTodoAssign(TodoAssignEntity.builder().todoId(todoEntity.getId()).build());
+        List<TodoAssignEntity> assignEntities = null;
+        try {
+            assignEntities = todoService.getTodoAssign(
+                    TodoAssignEntity.builder()
+                            .todoId(todoEntity.getId())
+                            .build()
+            );
+        } catch (TodoAssignNotFoundException e) {
+        }
         return RepresentationBuilder.buildTodoRep(todoEntity, assignEntities);
     }
 

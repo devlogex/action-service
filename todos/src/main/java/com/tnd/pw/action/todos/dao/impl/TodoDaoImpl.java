@@ -20,13 +20,13 @@ public class TodoDaoImpl implements TodoDao {
                     "due_date, state, created_at, created_by) " +
                     "values(%d, %d, %d, '%s', %d, '%s', '%s', %d, %d, %d, %d)";
     private static final String SQL_SELECT_BY_ID =
-            "SELECT * FROM todo WHERE id = %d";
+            "SELECT * FROM todo WHERE id = %d ORDER BY created_at";
     private static final String SQL_SELECT_BY_LIST_ID =
-            "SELECT * FROM todo WHERE id IN (%s)";
+            "SELECT * FROM todo WHERE id IN (%s) ORDER BY created_at";
     private static final String SQL_SELECT_BY_WORKSPACE_ID =
-            "SELECT * FROM todo WHERE workspace_id = %d";
+            "SELECT * FROM todo WHERE workspace_id = %d ORDER BY created_at";
     private static final String SQL_SELECT_BY_BELONG_ID =
-            "SELECT * FROM todo WHERE belong_id = %d";
+            "SELECT * FROM todo WHERE belong_id = %d ORDER BY created_at";
     private static final String SQL_UPDATE =
             "UPDATE todo SET name = '%s', description = '%s', files = '%s', due_date = %d, state = %d " +
                     "WHERE id = %d";

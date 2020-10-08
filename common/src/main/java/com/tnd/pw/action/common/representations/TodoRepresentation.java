@@ -21,7 +21,7 @@ public class TodoRepresentation implements Serializable {
     @SerializedName("name")
     private String name;
     @SerializedName("type")
-    private Integer type;
+    private String type;
     @SerializedName("description")
     private String description;
     @SerializedName("files")

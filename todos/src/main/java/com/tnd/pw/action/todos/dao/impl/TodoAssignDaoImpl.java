@@ -31,7 +31,7 @@ public class TodoAssignDaoImpl implements TodoAssignDao {
     private static final String SQL_SELECT_BY_USER_ID_AND_WORKSPACE_ID =
             "SELECT * FROM todo_assign WHERE user_id = %d AND workspace_id = %d";
     private static final String SQL_UPDATE =
-            "UPDATE todo_assign SET state = %d " +
+            "UPDATE todo_assign SET state = %d, verified_at = %d " +
                     "WHERE todo_id = %d AND user_id = %d";
     private static final String SQL_DELETE =
             "DELETE FROM todo_assign WHERE id = %d";
@@ -39,6 +39,8 @@ public class TodoAssignDaoImpl implements TodoAssignDao {
             "DELETE FROM todo_assign WHERE id IN (%s)";
     private static final String SQL_DELETE_BY_LIST_TODO_ID =
             "DELETE FROM todo_assign WHERE todo_id IN (%s)";
+    private static final String SQL_DELETE_LIST_USER_ID =
+            "DELETE FROM todo_assign WHERE user_id IN (%s)";
 
 
     @Override
@@ -89,7 +91,7 @@ public class TodoAssignDaoImpl implements TodoAssignDao {
 
     @Override
     public void update(TodoAssignEntity entity) throws IOException, DBServiceException {
-        String query = String.format(SQL_UPDATE, entity.getState(),
+        String query = String.format(SQL_UPDATE, entity.getState(), entity.getVerifiedAt(),
                 entity.getTodoId(), entity.getUserId());
         dataHelper.executeSQL(query);
     }
@@ -119,6 +121,17 @@ public class TodoAssignDaoImpl implements TodoAssignDao {
         }
         listId += ids.get(ids.size()-1);
         String query = String.format(SQL_DELETE_BY_LIST_TODO_ID, listId);
+        dataHelper.executeSQL(query);
+    }
+
+    @Override
+    public void removeByUserIds(List<Long> ids) throws IOException, DBServiceException {
+        String listId = "";
+        for (int i=0;i<ids.size() - 1; i++) {
+            listId += ids.get(i) + ",";
+        }
+        listId += ids.get(ids.size()-1);
+        String query = String.format(SQL_DELETE_LIST_USER_ID, listId);
         dataHelper.executeSQL(query);
     }
 }

@@ -15,7 +15,7 @@ public class ActionRunner {
         context.register(ActionConfig.class);
         context.refresh();
         SpringApplicationContext.setShareApplicationContext(context);
-
+        
         CommonServer commonServer = new CommonServer();
         commonServer.register(SpringApplicationContext.getBean(TodoHandler.class));
         commonServer.register(SpringApplicationContext.getBean(CommentHandler.class));

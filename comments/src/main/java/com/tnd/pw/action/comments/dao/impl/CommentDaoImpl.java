@@ -19,13 +19,13 @@ public class CommentDaoImpl implements CommentDao {
             "INSERT INTO comment(id, belong_id, workspace_id, content, files, created_at, created_by) " +
                     "values(%d, %d, %d, '%s', '%s', %d, %d)";
     private static final String SQL_SELECT_BY_ID =
-            "SELECT * FROM comment WHERE id = %d";
+            "SELECT * FROM comment WHERE id = %d ORDER BY created_at";
     private static final String SQL_SELECT_BY_LIST_ID =
-            "SELECT * FROM comment WHERE id IN (%s)";
+            "SELECT * FROM comment WHERE id IN (%s) ORDER BY created_at";
     private static final String SQL_SELECT_BY_BELONG_ID =
-            "SELECT * FROM comment WHERE belong_id = %d";
+            "SELECT * FROM comment WHERE belong_id = %d ORDER BY created_at";
     private static final String SQL_SELECT_BY_CREATED_BY_AND_WORKSPACE_ID =
-            "SELECT * FROM comment WHERE created_by = %d AND workspace_id = %d";
+            "SELECT * FROM comment WHERE created_by = %d AND workspace_id = %d ORDER BY created_at";
     private static final String SQL_DELETE =
             "DELETE FROM comment WHERE id = %d";
     private static final String SQL_DELETE_LIST =

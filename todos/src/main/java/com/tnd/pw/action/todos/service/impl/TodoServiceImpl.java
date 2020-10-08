@@ -77,6 +77,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public void updateTodoAssign(TodoAssignEntity entity) throws IOException, DBServiceException {
+        entity.setVerifiedAt(System.currentTimeMillis());
         todoAssignDao.update(entity);
     }
 
@@ -93,5 +94,10 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public void removeTodoAssignByTodoIds(List<Long> ids) throws IOException, DBServiceException {
         todoAssignDao.removeByTodoIds(ids);
+    }
+
+    @Override
+    public void removeTodoAssignByUserIds(List<Long> ids) throws IOException, DBServiceException {
+        todoAssignDao.removeByUserIds(ids);
     }
 }

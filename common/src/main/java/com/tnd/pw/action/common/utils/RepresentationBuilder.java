@@ -5,7 +5,9 @@ import com.tnd.pw.action.common.representations.CommentRepresentation;
 import com.tnd.pw.action.common.representations.CsActionRepresentation;
 import com.tnd.pw.action.common.representations.TodoAssignRep;
 import com.tnd.pw.action.common.representations.TodoRepresentation;
+import com.tnd.pw.action.todos.constants.AssignState;
 import com.tnd.pw.action.todos.constants.TodoState;
+import com.tnd.pw.action.todos.constants.TodoType;
 import com.tnd.pw.action.todos.entity.TodoAssignEntity;
 import com.tnd.pw.action.todos.entity.TodoEntity;
 
@@ -36,9 +38,11 @@ public class RepresentationBuilder {
         rep.setFiles(todo.getFiles());
         rep.setDueDate(todo.getDueDate());
         rep.setName(todo.getName());
-        rep.setType(todo.getType());
+        rep.setType(TodoType.values()[todo.getType()].name());
         rep.setWorkspaceId(todo.getWorkspaceId());
         rep.setState(TodoState.values()[todo.getState()].name());
+        rep.setCreatedAt(todo.getCreatedAt());
+        rep.setCreatedBy(todo.getCreatedBy());
         List<TodoAssignRep> todoAssignReps = new ArrayList<>();
         if(todoAssigns != null) {
             for (TodoAssignEntity entity : todoAssigns) {
@@ -52,9 +56,10 @@ public class RepresentationBuilder {
     private static TodoAssignRep buildTodoAssignRep(TodoAssignEntity entity) {
         TodoAssignRep rep = new TodoAssignRep();
         rep.setId(entity.getId());
-        rep.setState(entity.getState());
+        rep.setState(AssignState.values()[entity.getState()].name());
         rep.setTodoId(entity.getTodoId());
         rep.setUserId(entity.getUserId());
+        rep.setVerifiedAt(entity.getVerifiedAt());
         return rep;
     }
 

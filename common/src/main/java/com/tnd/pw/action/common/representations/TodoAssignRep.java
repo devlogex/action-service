@@ -18,5 +18,7 @@ public class TodoAssignRep implements Serializable {
     @SerializedName("user_id")
     private Long userId;
     @SerializedName("state")
-    private Integer state;
+    private String state;
+    @SerializedName("verified_at")
+    private Long verifiedAt;
 }

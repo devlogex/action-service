@@ -24,4 +24,5 @@ public interface TodoService {
     void removeTodoAssign(TodoAssignEntity entity) throws IOException, DBServiceException;
     void removeTodoAssign(List<Long> ids) throws IOException, DBServiceException;
     void removeTodoAssignByTodoIds(List<Long> ids) throws IOException, DBServiceException;
+    void removeTodoAssignByUserIds(List<Long> userIds) throws IOException, DBServiceException;
 }
