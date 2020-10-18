@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.util.List;
 
 public interface TodoDao {
-    void create(TodoEntity entity) throws IOException, DBServiceException;
-    List<TodoEntity> get(TodoEntity entity) throws TodoNotFoundException, IOException, DBServiceException;
-    List<TodoEntity> get(List<Long> ids) throws IOException, DBServiceException, TodoNotFoundException;
-    void update(TodoEntity entity) throws IOException, DBServiceException;
-    void remove(TodoEntity entity) throws IOException, DBServiceException;
-    void remove(List<Long> ids) throws IOException, DBServiceException;
+    void create(TodoEntity entity) throws DBServiceException;
+    List<TodoEntity> get(TodoEntity entity) throws TodoNotFoundException, DBServiceException;
+    List<TodoEntity> get(List<Long> ids) throws DBServiceException, TodoNotFoundException;
+    void update(TodoEntity entity) throws DBServiceException;
+    void remove(TodoEntity entity) throws DBServiceException;
+    void remove(List<Long> ids) throws DBServiceException;
 }

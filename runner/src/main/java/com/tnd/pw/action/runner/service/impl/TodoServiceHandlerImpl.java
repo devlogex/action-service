@@ -1,21 +1,16 @@
 package com.tnd.pw.action.runner.service.impl;
 
-import com.tnd.common.api.common.base.BaseRequest;
-import com.tnd.common.api.common.base.BaseResponse;
 import com.tnd.dbservice.common.exception.DBServiceException;
-import com.tnd.pw.action.api.ActionApiClient;
-import com.tnd.pw.action.api.requests.ConfigServiceRequest;
-import com.tnd.pw.action.api.responses.ConfigServiceResponse;
-import com.tnd.pw.action.api.responses.UserRepresentation;
 import com.tnd.pw.action.comments.entity.CommentEntity;
+import com.tnd.pw.action.comments.exception.CommentNotFoundException;
+import com.tnd.pw.action.comments.service.CommentService;
 import com.tnd.pw.action.common.constants.VerifyTodo;
 import com.tnd.pw.action.common.representations.CsActionRepresentation;
 import com.tnd.pw.action.common.representations.TodoRepresentation;
 import com.tnd.pw.action.common.requests.ActionRequest;
 import com.tnd.pw.action.common.requests.UserRequest;
-import com.tnd.pw.action.common.utils.GsonUtils;
 import com.tnd.pw.action.common.utils.RepresentationBuilder;
-import com.tnd.pw.action.runner.exception.CallApiFailException;
+import com.tnd.pw.action.runner.exception.NoPermissionException;
 import com.tnd.pw.action.runner.service.TodoServiceHandler;
 import com.tnd.pw.action.todos.constants.AssignState;
 import com.tnd.pw.action.todos.constants.TodoState;
@@ -30,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,10 +36,10 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
     @Autowired
     private TodoService todoService;
     @Autowired
-    private ActionApiClient apiClient;
+    private CommentService commentService;
 
     @Override
-    public TodoRepresentation addTodo(ActionRequest request) throws IOException, DBServiceException {
+    public TodoRepresentation addTodo(ActionRequest request) throws DBServiceException {
         TodoEntity todo = todoService.createTodo(
                 TodoEntity.builder()
                         .belongId(request.getId())
@@ -75,10 +69,12 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
     }
 
     @Override
-    public TodoRepresentation removeTodo(ActionRequest request) throws DBServiceException, IOException, TodoNotFoundException {
+    public CsActionRepresentation removeTodo(ActionRequest request) throws DBServiceException, TodoNotFoundException {
         if(request.getId() != null) {
+            TodoEntity todoEntity = todoService.getTodo(TodoEntity.builder().id(request.getId()).build()).get(0);
             todoService.removeTodoAssign(TodoAssignEntity.builder().todoId(request.getId()).build());
-            todoService.removeTodo(TodoEntity.builder().id(request.getId()).build());
+            todoService.removeTodo(todoEntity);
+            return getTodos(todoEntity.getBelongId());
         } else if(request.getBelongId()!= null) {
             List<TodoEntity> todos = todoService.getTodo(TodoEntity.builder().belongId(request.getBelongId()).build());
             List<Long> todoIds = todos.stream().map(TodoEntity::getId).collect(Collectors.toList());
@@ -89,21 +85,35 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
     }
 
     @Override
-    public CsActionRepresentation getTodos(ActionRequest request) throws DBServiceException, IOException {
+    public CsActionRepresentation getTodos(ActionRequest request) throws DBServiceException {
+        return getTodos(request.getId());
+    }
+
+    private CsActionRepresentation getTodos(Long belongId) throws DBServiceException {
         List<TodoEntity> todos = null;
+        List<CommentEntity> comments = null;
+        List<TodoAssignEntity> todoAssigns = null;
+        List<Long> todoIds = null;
         try {
             todos = todoService.getTodo(
                     TodoEntity.builder()
-                            .belongId(request.getId())
+                            .belongId(belongId)
                             .build()
             );
-            List<Long> todoIds = todos.stream().map(TodoEntity::getId).collect(Collectors.toList());
-            List<TodoAssignEntity> todoAssigns = todoService.getTodoAssign(todoIds);
-            return RepresentationBuilder.buildListTodoRep(todos, todoAssigns);
+            todoIds = todos.stream().map(TodoEntity::getId).collect(Collectors.toList());
+            todoAssigns = todoService.getTodoAssign(todoIds);
+            comments = commentService.getCommentByBelongIds(todoIds);
+            return RepresentationBuilder.buildListTodoRep(todos, todoAssigns, comments);
 
         } catch (TodoAssignNotFoundException e) {
-            LOGGER.info("TodoAssignNotFoundException");
-            return RepresentationBuilder.buildListTodoRep(todos, null);
+            try {
+                comments = commentService.getCommentByBelongIds(todoIds);
+            } catch (CommentNotFoundException commentNotFoundException) {
+                return RepresentationBuilder.buildListTodoRep(todos, null, null);
+            }
+            return RepresentationBuilder.buildListTodoRep(todos, null, comments);
+        } catch (CommentNotFoundException e) {
+            return RepresentationBuilder.buildListTodoRep(todos, todoAssigns, null);
         } catch (TodoNotFoundException e) {
             LOGGER.info("TodoNotFoundException");
             return null;
@@ -111,10 +121,12 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
     }
 
     @Override
-    public CsActionRepresentation getTodoOfUser(UserRequest request) throws DBServiceException, IOException {
+    public CsActionRepresentation getTodoOfUser(UserRequest request) throws DBServiceException {
         List<TodoEntity> todos = null;
+        List<CommentEntity> comments;
+        List<TodoAssignEntity> todoAssigns = null;
         try {
-            List<TodoAssignEntity> todoAssigns = todoService.getTodoAssign(
+            todoAssigns = todoService.getTodoAssign(
                     TodoAssignEntity.builder()
                             .userId(request.getPayload().getUserId())
                             .workspaceId(request.getPayload().getWorkspaceId())
@@ -122,10 +134,13 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
             );
             List<Long> todoIds = todoAssigns.stream().map(TodoAssignEntity::getTodoId).distinct().collect(Collectors.toList());
             todos = todoService.getTodo(todoIds);
-            return RepresentationBuilder.buildListTodoRep(todos, todoAssigns);
+            comments = commentService.getCommentByBelongIds(todoIds);
+            return RepresentationBuilder.buildListTodoRep(todos, todoAssigns, comments);
         } catch (TodoAssignNotFoundException e) {
             LOGGER.info("TodoAssignNotFoundException");
             return null;
+        } catch (CommentNotFoundException e) {
+            return RepresentationBuilder.buildListTodoRep(todos, todoAssigns, null);
         } catch (TodoNotFoundException e) {
             LOGGER.info("TodoNotFoundException");
             return null;
@@ -133,7 +148,7 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
     }
 
     @Override
-    public TodoRepresentation updateTodo(ActionRequest request) throws DBServiceException, TodoNotFoundException, IOException {
+    public TodoRepresentation updateTodo(ActionRequest request) throws DBServiceException, TodoNotFoundException {
         TodoEntity todoEntity = todoService.getTodo(
                 TodoEntity.builder()
                         .id(request.getId())
@@ -201,6 +216,7 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
             }
             if(todoEntity.getState() == TodoState.COMPLETE.ordinal()) {
                 todoEntity.setState(TodoState.PENDING.ordinal());
+                todoEntity.setCompletedAt(null);
             }
         }
         todoService.updateTodo(todoEntity);
@@ -217,12 +233,15 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
     }
 
     @Override
-    public TodoRepresentation verifyTodo(ActionRequest request) throws InconsistentStateException, IOException, DBServiceException, TodoNotFoundException, TodoAssignNotFoundException {
+    public TodoRepresentation verifyTodo(ActionRequest request) throws InconsistentStateException, DBServiceException, TodoNotFoundException, TodoAssignNotFoundException, NoPermissionException {
         TodoAssignEntity todoAssign = todoService.getTodoAssign(
                 TodoAssignEntity.builder()
                         .id(request.getId())
                         .build()
         ).get(0);
+        if(todoAssign.getUserId().compareTo(request.getPayload().getUserId()) != 0) {
+            throw new NoPermissionException("Just Only Assignee Can Verify !");
+        }
         VerifyTodo action = VerifyTodo.valueOf(request.getAction());
         switch (action) {
             case APPROVE:
@@ -254,6 +273,7 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
         long countPending = assignEntities.stream().filter(assign->assign.getState()==AssignState.PENDING.ordinal()).count();
         if(countPending == 0 && todoEntity.getState() == TodoState.PENDING.ordinal()) {
             todoEntity.setState(TodoState.COMPLETE.ordinal());
+            todoEntity.setCompletedAt(System.currentTimeMillis());
             todoService.updateTodo(todoEntity);
         }
 

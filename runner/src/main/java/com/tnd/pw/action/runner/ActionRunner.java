@@ -21,12 +21,9 @@ public class ActionRunner {
         commonServer.register(SpringApplicationContext.getBean(CommentHandler.class));
         commonServer.register(SpringApplicationContext.getBean(ActionHandler.class));
 
-        String port = System.getenv("PORT");
-        if (port == null) {
-            commonServer.initServlet(8004);
-        } else {
-            commonServer.initServlet(Integer.parseInt(port));
-        }
+        commonServer.initServlet(8004);
+        commonServer.initGrpc(9004);
+
         commonServer.startServer();
     }
 }

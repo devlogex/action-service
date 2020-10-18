@@ -31,6 +31,8 @@ public class TodoEntity implements Serializable {
     private Long dueDate;
     @SerializedName("state")
     private Integer state;
+    @SerializedName("completed_at")
+    private Long completedAt;
     @SerializedName("created_at")
     private Long createdAt;
     @SerializedName("created_by")

@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.util.List;
 
 public interface CommentService {
-    CommentEntity createComment(CommentEntity entity) throws IOException, DBServiceException;
-    List<CommentEntity> getComment(CommentEntity entity) throws DBServiceException, CommentNotFoundException, IOException;
-    List<CommentEntity> getComments(List<Long> ids) throws DBServiceException, CommentNotFoundException, IOException;
-    void removeComment(CommentEntity entity) throws IOException, DBServiceException;
-    void removeComment(List<Long> ids) throws IOException, DBServiceException;
+    CommentEntity createComment(CommentEntity entity) throws DBServiceException;
+    List<CommentEntity> getComment(CommentEntity entity) throws DBServiceException, CommentNotFoundException;
+    List<CommentEntity> getComments(List<Long> ids) throws DBServiceException, CommentNotFoundException;
+    void removeComment(CommentEntity entity) throws DBServiceException;
+    void removeComment(List<Long> ids) throws DBServiceException;
+    List<CommentEntity> getCommentByBelongIds(List<Long> belongIds) throws DBServiceException, CommentNotFoundException;
 }

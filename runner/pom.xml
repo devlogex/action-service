@@ -47,8 +47,12 @@
             <artifactId>common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.tnd.pw.action</groupId>
-            <artifactId>api-client</artifactId>
+            <groupId>com.tnd.pw.config</groupId>
+            <artifactId>sdk</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tnd.dbservice</groupId>
+            <artifactId>sdk</artifactId>
         </dependency>
     </dependencies>
 

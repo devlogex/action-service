@@ -1,11 +1,11 @@
 package com.tnd.pw.action.runner.config;
 
-import com.tnd.pw.action.api.ActionApiClient;
+import com.tnd.dbservice.sdk.api.DBServiceSdkClient;
+import com.tnd.dbservice.sdk.api.impl.DBServiceSdkClientImpl;
 import com.tnd.pw.action.comments.dao.CommentDao;
 import com.tnd.pw.action.comments.dao.impl.CommentDaoImpl;
 import com.tnd.pw.action.comments.service.CommentService;
 import com.tnd.pw.action.comments.service.impl.CommentServiceImpl;
-import com.tnd.pw.action.dbservice.DBServiceApiClient;
 import com.tnd.pw.action.dbservice.DataHelper;
 import com.tnd.pw.action.runner.handler.ActionHandler;
 import com.tnd.pw.action.runner.handler.CommentHandler;
@@ -20,6 +20,8 @@ import com.tnd.pw.action.todos.dao.impl.TodoAssignDaoImpl;
 import com.tnd.pw.action.todos.dao.impl.TodoDaoImpl;
 import com.tnd.pw.action.todos.service.TodoService;
 import com.tnd.pw.action.todos.service.impl.TodoServiceImpl;
+import com.tnd.pw.config.sdk.ConfigServiceSdkClient;
+import com.tnd.pw.config.sdk.impl.ConfigServiceSdkClientImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,22 +30,28 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:application.properties")
 public class ActionConfig {
-    @Value("${db.url}")
-    private String db_url;
+    @Value("${db.host}")
+    private String db_host;
+    @Value("${db.port}")
+    private String db_port;
+    @Value("${config.service.host}")
+    private String config_service_host;
+    @Value("${config.service.port}")
+    private String config_service_port;
 
     @Bean
-    public ActionApiClient apiClient() {
-        return new ActionApiClient();
+    public ConfigServiceSdkClient configServiceSdkClient() {
+        return new ConfigServiceSdkClientImpl(config_service_host, Integer.parseInt(config_service_port), 2);
     }
 
     @Bean
-    public DBServiceApiClient dbServiceApiClient() {
-        return new DBServiceApiClient();
+    public DBServiceSdkClient dbServiceSdkClient() {
+        return new DBServiceSdkClientImpl(db_host,Integer.parseInt(db_port), 1);
     }
 
     @Bean
-    public DataHelper dataHelper(DBServiceApiClient dbServiceApiClient) {
-        return new DataHelper(db_url, dbServiceApiClient);
+    public DataHelper dataHelper(DBServiceSdkClient dbServiceSdkClient) {
+        return new DataHelper(dbServiceSdkClient);
     }
 
     @Bean

@@ -17,7 +17,7 @@ public class CommentServiceImpl  implements CommentService {
     private CommentDao commentDao;
 
     @Override
-    public CommentEntity createComment(CommentEntity entity) throws IOException, DBServiceException {
+    public CommentEntity createComment(CommentEntity entity) throws DBServiceException {
         entity.setId(GenUID.genIdByParent(entity.getBelongId()));
         entity.setCreatedAt(System.currentTimeMillis());
         if(entity.getFiles() == null) {
@@ -28,22 +28,27 @@ public class CommentServiceImpl  implements CommentService {
     }
 
     @Override
-    public List<CommentEntity> getComment(CommentEntity entity) throws DBServiceException, CommentNotFoundException, IOException {
+    public List<CommentEntity> getComment(CommentEntity entity) throws DBServiceException, CommentNotFoundException {
         return commentDao.get(entity);
     }
 
     @Override
-    public List<CommentEntity> getComments(List<Long> ids) throws DBServiceException, CommentNotFoundException, IOException {
+    public List<CommentEntity> getComments(List<Long> ids) throws DBServiceException, CommentNotFoundException {
         return commentDao.get(ids);
     }
 
     @Override
-    public void removeComment(CommentEntity entity) throws IOException, DBServiceException {
+    public void removeComment(CommentEntity entity) throws DBServiceException {
         commentDao.remove(entity);
     }
 
     @Override
-    public void removeComment(List<Long> ids) throws IOException, DBServiceException {
+    public void removeComment(List<Long> ids) throws DBServiceException {
         commentDao.remove(ids);
+    }
+
+    @Override
+    public List<CommentEntity> getCommentByBelongIds(List<Long> belongIds) throws DBServiceException, CommentNotFoundException {
+        return commentDao.getByBelongIds(belongIds);
     }
 }

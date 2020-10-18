@@ -24,7 +24,7 @@ public class TodoServiceImpl implements TodoService {
     private TodoAssignDao todoAssignDao;
 
     @Override
-    public TodoEntity createTodo(TodoEntity entity) throws IOException, DBServiceException {
+    public TodoEntity createTodo(TodoEntity entity) throws DBServiceException {
         entity.setId(GenUID.genIdByParent(entity.getBelongId()));
         entity.setCreatedAt(System.currentTimeMillis());
         entity.setState(TodoState.PENDING.ordinal());
@@ -33,32 +33,32 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public List<TodoEntity> getTodo(TodoEntity entity) throws DBServiceException, TodoNotFoundException, IOException {
+    public List<TodoEntity> getTodo(TodoEntity entity) throws DBServiceException, TodoNotFoundException {
         return todoDao.get(entity);
     }
 
     @Override
-    public List<TodoEntity> getTodo(List<Long> ids) throws DBServiceException, TodoNotFoundException, IOException {
+    public List<TodoEntity> getTodo(List<Long> ids) throws DBServiceException, TodoNotFoundException {
         return todoDao.get(ids);
     }
 
     @Override
-    public void updateTodo(TodoEntity entity) throws IOException, DBServiceException {
+    public void updateTodo(TodoEntity entity) throws DBServiceException {
         todoDao.update(entity);
     }
 
     @Override
-    public void removeTodo(TodoEntity entity) throws IOException, DBServiceException {
+    public void removeTodo(TodoEntity entity) throws DBServiceException {
         todoDao.remove(entity);
     }
 
     @Override
-    public void removeTodo(List<Long> ids) throws IOException, DBServiceException {
+    public void removeTodo(List<Long> ids) throws DBServiceException {
         todoDao.remove(ids);
     }
 
     @Override
-    public TodoAssignEntity createTodoAssign(TodoAssignEntity entity) throws IOException, DBServiceException {
+    public TodoAssignEntity createTodoAssign(TodoAssignEntity entity) throws DBServiceException {
         entity.setId(GenUID.genIdByParent(entity.getTodoId()));
         entity.create();
         todoAssignDao.create(entity);
@@ -66,38 +66,38 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public List<TodoAssignEntity> getTodoAssign(TodoAssignEntity entity) throws DBServiceException, TodoAssignNotFoundException, IOException {
+    public List<TodoAssignEntity> getTodoAssign(TodoAssignEntity entity) throws DBServiceException, TodoAssignNotFoundException {
         return todoAssignDao.get(entity);
     }
 
     @Override
-    public List<TodoAssignEntity> getTodoAssign(List<Long> todoIds) throws DBServiceException, TodoAssignNotFoundException, IOException {
+    public List<TodoAssignEntity> getTodoAssign(List<Long> todoIds) throws DBServiceException, TodoAssignNotFoundException {
         return todoAssignDao.get(todoIds);
     }
 
     @Override
-    public void updateTodoAssign(TodoAssignEntity entity) throws IOException, DBServiceException {
+    public void updateTodoAssign(TodoAssignEntity entity) throws DBServiceException {
         entity.setVerifiedAt(System.currentTimeMillis());
         todoAssignDao.update(entity);
     }
 
     @Override
-    public void removeTodoAssign(TodoAssignEntity entity) throws IOException, DBServiceException {
+    public void removeTodoAssign(TodoAssignEntity entity) throws DBServiceException {
         todoAssignDao.remove(entity);
     }
 
     @Override
-    public void removeTodoAssign(List<Long> ids) throws IOException, DBServiceException {
+    public void removeTodoAssign(List<Long> ids) throws DBServiceException {
         todoAssignDao.remove(ids);
     }
 
     @Override
-    public void removeTodoAssignByTodoIds(List<Long> ids) throws IOException, DBServiceException {
+    public void removeTodoAssignByTodoIds(List<Long> ids) throws DBServiceException {
         todoAssignDao.removeByTodoIds(ids);
     }
 
     @Override
-    public void removeTodoAssignByUserIds(List<Long> ids) throws IOException, DBServiceException {
+    public void removeTodoAssignByUserIds(List<Long> ids) throws DBServiceException {
         todoAssignDao.removeByUserIds(ids);
     }
 }

@@ -11,14 +11,12 @@ import com.tnd.pw.action.common.representations.CsActionRepresentation;
 import com.tnd.pw.action.common.requests.ActionRequest;
 import com.tnd.pw.action.common.requests.UserRequest;
 import com.tnd.pw.action.common.utils.GsonUtils;
-import com.tnd.pw.action.runner.exception.CallApiFailException;
+import com.tnd.pw.action.runner.exception.ConfigServiceFailedException;
 import com.tnd.pw.action.runner.exception.NoPermissionException;
 import com.tnd.pw.action.runner.service.CommentServiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
 
 @HandlerServiceClass
 public class CommentHandler implements BaseHandler {
@@ -28,7 +26,7 @@ public class CommentHandler implements BaseHandler {
     private CommentServiceHandler commentServiceHandler;
 
     @HandlerService(path = "/action/comment/add", protocol = "POST")
-    public BaseResponse<CommentRepresentation> addComment(ActionRequest request) throws DBServiceException, IOException, CallApiFailException {
+    public BaseResponse<CommentRepresentation> addComment(ActionRequest request) throws DBServiceException, ConfigServiceFailedException {
         LOGGER.info("[CommentHandler] addComment() - request: {}", GsonUtils.convertToString(request));
         CommentRepresentation response = commentServiceHandler.addComment(request);
         LOGGER.info("[CommentHandler] addComment() - response: {}", GsonUtils.convertToString(response));
@@ -36,7 +34,7 @@ public class CommentHandler implements BaseHandler {
     }
 
     @HandlerService(path = "/action/comment/remove", protocol = "POST")
-    public BaseResponse<CommentRepresentation> removeComment(ActionRequest request) throws DBServiceException, IOException, CommentNotFoundException, NoPermissionException {
+    public BaseResponse<CommentRepresentation> removeComment(ActionRequest request) throws DBServiceException, CommentNotFoundException, NoPermissionException {
         LOGGER.info("[CommentHandler] removeComment() - request: {}", GsonUtils.convertToString(request));
         CommentRepresentation response = commentServiceHandler.removeComment(request);
         LOGGER.info("[CommentHandler] removeComment() - response: {}", GsonUtils.convertToString(response));
@@ -44,7 +42,7 @@ public class CommentHandler implements BaseHandler {
     }
 
     @HandlerService(path = "/action/comment", protocol = "GET")
-    public BaseResponse<CsActionRepresentation> getComments(ActionRequest request) throws DBServiceException, IOException, CallApiFailException {
+    public BaseResponse<CsActionRepresentation> getComments(ActionRequest request) throws DBServiceException, ConfigServiceFailedException {
         LOGGER.info("[CommentHandler] getComments() - request: {}", GsonUtils.convertToString(request));
         CsActionRepresentation response = commentServiceHandler.getComments(request);
         LOGGER.info("[CommentHandler] getComments() - response: {}", GsonUtils.convertToString(response));
@@ -52,7 +50,7 @@ public class CommentHandler implements BaseHandler {
     }
 
     @HandlerService(path = "/action/comment/user", protocol = "GET")
-    public BaseResponse<CsActionRepresentation> getCommentOfUser(UserRequest request) throws DBServiceException, IOException, CallApiFailException {
+    public BaseResponse<CsActionRepresentation> getCommentOfUser(UserRequest request) throws DBServiceException, ConfigServiceFailedException {
         LOGGER.info("[CommentHandler] getCommentOfUser() - request: {}", GsonUtils.convertToString(request));
         CsActionRepresentation response = commentServiceHandler.getCommentOfUser(request);
         LOGGER.info("[CommentHandler] getCommentOfUser() - response: {}", GsonUtils.convertToString(response));

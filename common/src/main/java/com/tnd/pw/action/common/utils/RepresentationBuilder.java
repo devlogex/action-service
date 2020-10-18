@@ -43,6 +43,7 @@ public class RepresentationBuilder {
         rep.setState(TodoState.values()[todo.getState()].name());
         rep.setCreatedAt(todo.getCreatedAt());
         rep.setCreatedBy(todo.getCreatedBy());
+        rep.setCompletedAt(todo.getCompletedAt());
         List<TodoAssignRep> todoAssignReps = new ArrayList<>();
         if(todoAssigns != null) {
             for (TodoAssignEntity entity : todoAssigns) {
@@ -63,16 +64,31 @@ public class RepresentationBuilder {
         return rep;
     }
 
-    public static CsActionRepresentation buildListTodoRep(List<TodoEntity> todos, List<TodoAssignEntity> todoAssigns) {
+    public static CsActionRepresentation buildListTodoRep(List<TodoEntity> todos, List<TodoAssignEntity> todoAssigns, List<CommentEntity> commentEntities) {
         List<TodoRepresentation> todoReps = new ArrayList<>();
         if(todoAssigns == null)
             todoAssigns = new ArrayList<>();
+        if(commentEntities == null) {
+            commentEntities = new ArrayList<>();
+        }
         for(TodoEntity todo: todos) {
             List<TodoAssignEntity> assigns = todoAssigns.stream().filter(assign -> assign.getTodoId().compareTo(todo.getId()) == 0).collect(Collectors.toList());
-            todoReps.add(buildTodoRep(todo, assigns));
+            List<CommentEntity> commentOfTodo = commentEntities.stream().filter(comment->comment.getBelongId().compareTo(todo.getId())==0).collect(Collectors.toList());
+            TodoRepresentation todoRep = buildTodoRep(todo, assigns);
+            todoRep.setCommentReps(buildListCommentRep(commentOfTodo));
         }
         CsActionRepresentation representation = new CsActionRepresentation();
         representation.setTodoReps(todoReps);
         return representation;
+    }
+
+    private static List<CommentRepresentation> buildListCommentRep(List<CommentEntity> commentOfTodo) {
+        List<CommentRepresentation> list = new ArrayList<>();
+        if(commentOfTodo != null) {
+            for (CommentEntity entity : commentOfTodo) {
+                list.add(buildCommentRep(entity, null));
+            }
+        }
+        return list;
     }
 }

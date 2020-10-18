@@ -30,10 +30,14 @@ public class TodoRepresentation implements Serializable {
     private Long dueDate;
     @SerializedName("state")
     private String state;
+    @SerializedName("completed_at")
+    private Long completedAt;
     @SerializedName("created_at")
     private Long createdAt;
     @SerializedName("created_by")
     private Long createdBy;
     @SerializedName("list_assign")
     private List<TodoAssignRep> assignReps;
+    @SerializedName("list_comments")
+    private List<CommentRepresentation> commentReps;
 }

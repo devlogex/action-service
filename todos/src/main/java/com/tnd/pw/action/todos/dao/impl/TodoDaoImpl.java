@@ -28,7 +28,7 @@ public class TodoDaoImpl implements TodoDao {
     private static final String SQL_SELECT_BY_BELONG_ID =
             "SELECT * FROM todo WHERE belong_id = %d ORDER BY created_at";
     private static final String SQL_UPDATE =
-            "UPDATE todo SET name = '%s', description = '%s', files = '%s', due_date = %d, state = %d " +
+            "UPDATE todo SET name = '%s', description = '%s', files = '%s', due_date = %d, state = %d, completed_at = %d " +
                     "WHERE id = %d";
     private static final String SQL_DELETE =
             "DELETE FROM todo WHERE id = %d";
@@ -39,7 +39,7 @@ public class TodoDaoImpl implements TodoDao {
 
 
     @Override
-    public void create(TodoEntity entity) throws IOException, DBServiceException {
+    public void create(TodoEntity entity) throws DBServiceException {
         String query = String.format(SQL_CREATE, entity.getId(), entity.getBelongId(), entity.getWorkspaceId(),
                 entity.getName(), entity.getType(), entity.getDescription(),entity.getFiles(), entity.getDueDate(),
                 entity.getState(), entity.getCreatedAt(), entity.getCreatedBy());
@@ -47,7 +47,7 @@ public class TodoDaoImpl implements TodoDao {
     }
 
     @Override
-    public List<TodoEntity> get(TodoEntity entity) throws TodoNotFoundException, IOException, DBServiceException {
+    public List<TodoEntity> get(TodoEntity entity) throws TodoNotFoundException, DBServiceException {
         String query;
         if(entity.getId() != null) {
             query = String.format(SQL_SELECT_BY_ID, entity.getId());
@@ -66,7 +66,7 @@ public class TodoDaoImpl implements TodoDao {
     }
 
     @Override
-    public List<TodoEntity> get(List<Long> ids) throws IOException, DBServiceException, TodoNotFoundException {
+    public List<TodoEntity> get(List<Long> ids) throws DBServiceException, TodoNotFoundException {
         String listId = "";
         for (int i=0;i<ids.size() - 1; i++) {
             listId += ids.get(i) + ",";
@@ -81,14 +81,14 @@ public class TodoDaoImpl implements TodoDao {
     }
 
     @Override
-    public void update(TodoEntity entity) throws IOException, DBServiceException {
+    public void update(TodoEntity entity) throws DBServiceException {
         String query = String.format(SQL_UPDATE, entity.getName(), entity.getDescription(),entity.getFiles(),
-                entity.getDueDate(), entity.getState(), entity.getId());
+                entity.getDueDate(), entity.getState(), entity.getCompletedAt(), entity.getId());
         dataHelper.executeSQL(query);
     }
 
     @Override
-    public void remove(TodoEntity entity) throws IOException, DBServiceException {
+    public void remove(TodoEntity entity) throws DBServiceException {
         String query = "";
         if(entity.getId() != null) {
             query = String.format(SQL_DELETE, entity.getId());
@@ -99,7 +99,7 @@ public class TodoDaoImpl implements TodoDao {
     }
 
     @Override
-    public void remove(List<Long> ids) throws IOException, DBServiceException {
+    public void remove(List<Long> ids) throws DBServiceException {
         String listId = "";
         for (int i=0;i<ids.size() - 1; i++) {
             listId += ids.get(i) + ",";

@@ -44,14 +44,14 @@ public class TodoAssignDaoImpl implements TodoAssignDao {
 
 
     @Override
-    public void create(TodoAssignEntity entity) throws IOException, DBServiceException {
+    public void create(TodoAssignEntity entity) throws DBServiceException {
         String query = String.format(SQL_CREATE, entity.getId(), entity.getTodoId(), entity.getUserId(),
                 entity.getWorkspaceId(), entity.getType(), entity.getState());
         dataHelper.executeSQL(query);
     }
 
     @Override
-    public List<TodoAssignEntity> get(TodoAssignEntity entity) throws IOException, DBServiceException, TodoAssignNotFoundException {
+    public List<TodoAssignEntity> get(TodoAssignEntity entity) throws DBServiceException, TodoAssignNotFoundException {
         String query;
         if(entity.getId() != null) {
             query = String.format(SQL_SELECT_BY_ID, entity.getId());
@@ -75,7 +75,7 @@ public class TodoAssignDaoImpl implements TodoAssignDao {
     }
 
     @Override
-    public List<TodoAssignEntity> get(List<Long> todoIds) throws IOException, DBServiceException, TodoAssignNotFoundException {
+    public List<TodoAssignEntity> get(List<Long> todoIds) throws DBServiceException, TodoAssignNotFoundException {
         String listId = "";
         for (int i=0;i<todoIds.size() - 1; i++) {
             listId += todoIds.get(i) + ",";
@@ -90,20 +90,20 @@ public class TodoAssignDaoImpl implements TodoAssignDao {
     }
 
     @Override
-    public void update(TodoAssignEntity entity) throws IOException, DBServiceException {
+    public void update(TodoAssignEntity entity) throws DBServiceException {
         String query = String.format(SQL_UPDATE, entity.getState(), entity.getVerifiedAt(),
                 entity.getTodoId(), entity.getUserId());
         dataHelper.executeSQL(query);
     }
 
     @Override
-    public void remove(TodoAssignEntity entity) throws IOException, DBServiceException {
+    public void remove(TodoAssignEntity entity) throws DBServiceException {
         String query = String.format(SQL_DELETE, entity.getId());
         dataHelper.executeSQL(query);
     }
 
     @Override
-    public void remove(List<Long> ids) throws IOException, DBServiceException {
+    public void remove(List<Long> ids) throws DBServiceException {
         String listId = "";
         for (int i=0;i<ids.size() - 1; i++) {
             listId += ids.get(i) + ",";
@@ -114,7 +114,7 @@ public class TodoAssignDaoImpl implements TodoAssignDao {
     }
 
     @Override
-    public void removeByTodoIds(List<Long> ids) throws IOException, DBServiceException {
+    public void removeByTodoIds(List<Long> ids) throws DBServiceException {
         String listId = "";
         for (int i=0;i<ids.size() - 1; i++) {
             listId += ids.get(i) + ",";
@@ -125,7 +125,7 @@ public class TodoAssignDaoImpl implements TodoAssignDao {
     }
 
     @Override
-    public void removeByUserIds(List<Long> ids) throws IOException, DBServiceException {
+    public void removeByUserIds(List<Long> ids) throws DBServiceException {
         String listId = "";
         for (int i=0;i<ids.size() - 1; i++) {
             listId += ids.get(i) + ",";

@@ -14,7 +14,6 @@
         <module>dbservice</module>
         <module>todos</module>
         <module>comments</module>
-        <module>api-client</module>
         <module>sdk</module>
     </modules>
 
@@ -27,6 +26,7 @@
         <common.ioc.version>1.0-SNAPSHOT</common.ioc.version>
         <dbservice.version>1.0-SNAPSHOT</dbservice.version>
         <action.version>1.0-SNAPSHOT</action.version>
+        <config.version>1.0-SNAPSHOT</config.version>
         <lombok.version>1.18.12</lombok.version>
         <spring.version>5.2.6.RELEASE</spring.version>
     </properties>
@@ -109,9 +109,14 @@
                 <version>${action.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.tnd.pw.action</groupId>
-                <artifactId>api-client</artifactId>
-                <version>${action.version}</version>
+                <groupId>com.tnd.pw.config</groupId>
+                <artifactId>sdk</artifactId>
+                <version>${config.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tnd.dbservice</groupId>
+                <artifactId>sdk</artifactId>
+                <version>${dbservice.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

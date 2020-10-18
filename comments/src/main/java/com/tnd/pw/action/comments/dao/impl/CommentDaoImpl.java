@@ -22,6 +22,8 @@ public class CommentDaoImpl implements CommentDao {
             "SELECT * FROM comment WHERE id = %d ORDER BY created_at";
     private static final String SQL_SELECT_BY_LIST_ID =
             "SELECT * FROM comment WHERE id IN (%s) ORDER BY created_at";
+    private static final String SQL_SELECT_BY_LIST_BELONG_ID =
+            "SELECT * FROM comment WHERE belong_id IN (%s) ORDER BY created_at";
     private static final String SQL_SELECT_BY_BELONG_ID =
             "SELECT * FROM comment WHERE belong_id = %d ORDER BY created_at";
     private static final String SQL_SELECT_BY_CREATED_BY_AND_WORKSPACE_ID =
@@ -35,14 +37,14 @@ public class CommentDaoImpl implements CommentDao {
 
 
     @Override
-    public void create(CommentEntity entity) throws IOException, DBServiceException {
+    public void create(CommentEntity entity) throws DBServiceException {
         String query = String.format(SQL_CREATE, entity.getId(), entity.getBelongId(), entity.getWorkspaceId(),
                 entity.getContent(), entity.getFiles(), entity.getCreatedAt(), entity.getCreatedBy());
         dataHelper.executeSQL(query);
     }
 
     @Override
-    public List<CommentEntity> get(CommentEntity entity) throws CommentNotFoundException, IOException, DBServiceException {
+    public List<CommentEntity> get(CommentEntity entity) throws CommentNotFoundException, DBServiceException {
         String query = "";
         if(entity.getId() != null) {
             query = String.format(SQL_SELECT_BY_ID, entity.getId());
@@ -61,7 +63,7 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public List<CommentEntity> get(List<Long> ids) throws IOException, DBServiceException, CommentNotFoundException {
+    public List<CommentEntity> get(List<Long> ids) throws DBServiceException, CommentNotFoundException {
         String listId = "";
         for (int i=0;i<ids.size() - 1; i++) {
             listId += ids.get(i) + ",";
@@ -76,7 +78,7 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public void remove(CommentEntity entity) throws IOException, DBServiceException {
+    public void remove(CommentEntity entity) throws DBServiceException {
         String query = "";
         if(entity.getId() != null) {
             query = String.format(SQL_DELETE, entity.getId());
@@ -87,7 +89,7 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public void remove(List<Long> ids) throws IOException, DBServiceException {
+    public void remove(List<Long> ids) throws DBServiceException {
         String listId = "";
         for (int i=0;i<ids.size() - 1; i++) {
             listId += ids.get(i) + ",";
@@ -95,5 +97,20 @@ public class CommentDaoImpl implements CommentDao {
         listId += ids.get(ids.size()-1);
         String query = String.format(SQL_DELETE_LIST, listId);
         dataHelper.executeSQL(query);
+    }
+
+    @Override
+    public List<CommentEntity> getByBelongIds(List<Long> ids) throws DBServiceException, CommentNotFoundException {
+        String listId = "";
+        for (int i=0;i<ids.size() - 1; i++) {
+            listId += ids.get(i) + ",";
+        }
+        listId += ids.get(ids.size()-1);
+        String query = String.format(SQL_SELECT_BY_LIST_BELONG_ID, listId);
+        List<CommentEntity> entities = dataHelper.querySQL(query, CommentEntity.class);
+        if(CollectionUtils.isEmpty(entities)) {
+            throw new CommentNotFoundException();
+        }
+        return entities;
     }
 }
