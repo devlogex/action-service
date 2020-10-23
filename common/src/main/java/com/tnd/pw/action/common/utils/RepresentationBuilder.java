@@ -76,6 +76,7 @@ public class RepresentationBuilder {
             List<CommentEntity> commentOfTodo = commentEntities.stream().filter(comment->comment.getBelongId().compareTo(todo.getId())==0).collect(Collectors.toList());
             TodoRepresentation todoRep = buildTodoRep(todo, assigns);
             todoRep.setCommentReps(buildListCommentRep(commentOfTodo));
+            todoReps.add(todoRep);
         }
         CsActionRepresentation representation = new CsActionRepresentation();
         representation.setTodoReps(todoReps);
