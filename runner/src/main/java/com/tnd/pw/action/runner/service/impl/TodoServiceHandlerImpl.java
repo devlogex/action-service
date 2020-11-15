@@ -280,4 +280,32 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
         return RepresentationBuilder.buildTodoRep(todoEntity, assignEntities);
     }
 
+    @Override
+    public CsActionRepresentation getTodoLists(ActionRequest request) throws DBServiceException {
+        List<TodoEntity> todos = null;
+        List<CommentEntity> comments = null;
+        List<TodoAssignEntity> todoAssigns = null;
+        List<Long> todoIds = null;
+        try {
+            todos = todoService.getTodoByBelongIds(request.getIds());
+            todoIds = todos.stream().map(TodoEntity::getId).collect(Collectors.toList());
+            todoAssigns = todoService.getTodoAssign(todoIds);
+            comments = commentService.getCommentByBelongIds(todoIds);
+            return RepresentationBuilder.buildListTodoRep(todos, todoAssigns, comments);
+
+        } catch (TodoAssignNotFoundException e) {
+            try {
+                comments = commentService.getCommentByBelongIds(todoIds);
+            } catch (CommentNotFoundException commentNotFoundException) {
+                return RepresentationBuilder.buildListTodoRep(todos, null, null);
+            }
+            return RepresentationBuilder.buildListTodoRep(todos, null, comments);
+        } catch (CommentNotFoundException e) {
+            return RepresentationBuilder.buildListTodoRep(todos, todoAssigns, null);
+        } catch (TodoNotFoundException e) {
+            LOGGER.info("TodoNotFoundException");
+            return null;
+        }
+    }
+
 }

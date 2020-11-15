@@ -13,6 +13,7 @@ public interface TodoService {
     TodoEntity createTodo(TodoEntity entity) throws DBServiceException;
     List<TodoEntity> getTodo(TodoEntity entity) throws DBServiceException, TodoNotFoundException;
     List<TodoEntity> getTodo(List<Long> ids) throws DBServiceException, TodoNotFoundException;
+    List<TodoEntity> getTodoByBelongIds(List<Long> ids) throws DBServiceException, TodoNotFoundException;
     void updateTodo(TodoEntity entity) throws DBServiceException;
     void removeTodo(TodoEntity entity) throws DBServiceException;
     void removeTodo(List<Long> ids) throws DBServiceException;
@@ -25,4 +26,5 @@ public interface TodoService {
     void removeTodoAssign(List<Long> ids) throws DBServiceException;
     void removeTodoAssignByTodoIds(List<Long> ids) throws DBServiceException;
     void removeTodoAssignByUserIds(List<Long> userIds) throws DBServiceException;
+
 }

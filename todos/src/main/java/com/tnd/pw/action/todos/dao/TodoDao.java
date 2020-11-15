@@ -12,7 +12,9 @@ public interface TodoDao {
     void create(TodoEntity entity) throws DBServiceException;
     List<TodoEntity> get(TodoEntity entity) throws TodoNotFoundException, DBServiceException;
     List<TodoEntity> get(List<Long> ids) throws DBServiceException, TodoNotFoundException;
+    List<TodoEntity> getByBelongIds(List<Long> ids) throws TodoNotFoundException, DBServiceException;
     void update(TodoEntity entity) throws DBServiceException;
     void remove(TodoEntity entity) throws DBServiceException;
     void remove(List<Long> ids) throws DBServiceException;
+
 }

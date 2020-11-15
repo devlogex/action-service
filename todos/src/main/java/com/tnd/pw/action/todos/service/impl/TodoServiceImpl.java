@@ -43,6 +43,11 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
+    public List<TodoEntity> getTodoByBelongIds(List<Long> ids) throws DBServiceException, TodoNotFoundException {
+        return todoDao.getByBelongIds(ids);
+    }
+
+    @Override
     public void updateTodo(TodoEntity entity) throws DBServiceException {
         todoDao.update(entity);
     }

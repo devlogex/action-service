@@ -27,6 +27,8 @@ public class TodoDaoImpl implements TodoDao {
             "SELECT * FROM todo WHERE workspace_id = %d ORDER BY created_at";
     private static final String SQL_SELECT_BY_BELONG_ID =
             "SELECT * FROM todo WHERE belong_id = %d ORDER BY created_at";
+    private static final String SQL_SELECT_BY_LIST_BELONG_ID =
+            "SELECT * FROM todo WHERE belong_id IN (%s) ORDER BY created_at";
     private static final String SQL_UPDATE =
             "UPDATE todo SET name = '%s', description = '%s', files = '%s', due_date = %d, state = %d, completed_at = %d " +
                     "WHERE id = %d";
@@ -73,6 +75,21 @@ public class TodoDaoImpl implements TodoDao {
         }
         listId += ids.get(ids.size()-1);
         String query = String.format(SQL_SELECT_BY_LIST_ID, listId);
+        List<TodoEntity> entities = dataHelper.querySQL(query, TodoEntity.class);
+        if(CollectionUtils.isEmpty(entities)) {
+            throw new TodoNotFoundException();
+        }
+        return entities;
+    }
+
+    @Override
+    public List<TodoEntity> getByBelongIds(List<Long> ids) throws TodoNotFoundException, DBServiceException {
+        String listId = "";
+        for (int i=0;i<ids.size() - 1; i++) {
+            listId += ids.get(i) + ",";
+        }
+        listId += ids.get(ids.size()-1);
+        String query = String.format(SQL_SELECT_BY_LIST_BELONG_ID, listId);
         List<TodoEntity> entities = dataHelper.querySQL(query, TodoEntity.class);
         if(CollectionUtils.isEmpty(entities)) {
             throw new TodoNotFoundException();

@@ -5,6 +5,7 @@ import com.tnd.common.api.server.BaseHandler;
 import com.tnd.common.api.server.service.annotation.HandlerService;
 import com.tnd.common.api.server.service.annotation.HandlerServiceClass;
 import com.tnd.dbservice.common.exception.DBServiceException;
+import com.tnd.pw.action.common.constants.Methods;
 import com.tnd.pw.action.common.requests.UserRequest;
 import com.tnd.pw.action.runner.exception.NoPermissionException;
 import com.tnd.pw.action.todos.exception.InconsistentStateException;
@@ -73,6 +74,14 @@ public class TodoHandler implements BaseHandler {
         LOGGER.info("[TodoHandler] getTodoOfUser() - request: {}", GsonUtils.convertToString(request));
         CsActionRepresentation response = todoServiceHandler.getTodoOfUser(request);
         LOGGER.info("[TodoHandler] getTodoOfUser() - response: {}", GsonUtils.convertToString(response));
+        return new BaseResponse<>(response);
+    }
+
+    @HandlerService(method = Methods.GET_TODO)
+    public BaseResponse<CsActionRepresentation> getTodoLists(ActionRequest request) throws DBServiceException, TodoNotFoundException {
+        LOGGER.info("[TodoHandler] getTodoLists() - request: {}", GsonUtils.convertToString(request));
+        CsActionRepresentation response = todoServiceHandler.getTodoLists(request);
+        LOGGER.info("[TodoHandler] getTodoLists() - response: {}", GsonUtils.convertToString(response));
         return new BaseResponse<>(response);
     }
 }

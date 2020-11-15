@@ -7,6 +7,8 @@ import com.tnd.pw.action.common.representations.CsActionRepresentation;
 import com.tnd.pw.action.common.requests.ActionRequest;
 import com.tnd.pw.action.sdk.ActionServiceSdkClient;
 
+import java.util.List;
+
 public class ActionServiceSdkClientImpl extends AbstractService implements ActionServiceSdkClient {
 
     public ActionServiceSdkClientImpl(String host, int port, int appId) {
@@ -18,5 +20,12 @@ public class ActionServiceSdkClientImpl extends AbstractService implements Actio
         ActionRequest request = new ActionRequest();
         request.setId(belongId);
         return client.sendRequest(Methods.GET_TODO_COMMENT, request);
+    }
+
+    @Override
+    public BaseResponse<CsActionRepresentation> getTodos(List<Long> belongIds) {
+        ActionRequest request = new ActionRequest();
+        request.setIds(belongIds);
+        return client.sendRequest(Methods.GET_TODO, request);
     }
 }

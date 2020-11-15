@@ -20,4 +20,6 @@ public interface TodoServiceHandler {
     TodoRepresentation updateTodo(ActionRequest request) throws DBServiceException, TodoNotFoundException, TodoAssignNotFoundException;
 
     TodoRepresentation verifyTodo(ActionRequest request) throws InconsistentStateException, DBServiceException, TodoAssignNotFoundException, TodoNotFoundException, NoPermissionException;
+
+    CsActionRepresentation getTodoLists(ActionRequest request) throws DBServiceException;
 }
