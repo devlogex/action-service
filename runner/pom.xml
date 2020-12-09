@@ -54,6 +54,10 @@
             <groupId>com.tnd.dbservice</groupId>
             <artifactId>sdk</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.tnd.pw.development</groupId>
+            <artifactId>sdk</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

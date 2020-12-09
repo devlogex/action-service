@@ -22,14 +22,20 @@ import com.tnd.pw.action.todos.service.TodoService;
 import com.tnd.pw.action.todos.service.impl.TodoServiceImpl;
 import com.tnd.pw.config.sdk.ConfigServiceSdkClient;
 import com.tnd.pw.config.sdk.impl.ConfigServiceSdkClientImpl;
+import com.tnd.pw.development.sdk.DevServiceSdkClient;
+import com.tnd.pw.development.sdk.impl.DevServiceSdkClientImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Configuration
 @PropertySource("classpath:application.properties")
 public class ActionConfig {
+    public static ExecutorService executor = Executors.newFixedThreadPool(5);
     @Value("${db.host}")
     private String db_host;
     @Value("${db.port}")
@@ -38,10 +44,19 @@ public class ActionConfig {
     private String config_service_host;
     @Value("${config.service.port}")
     private String config_service_port;
+    @Value("${dev.service.host}")
+    private String dev_service_host;
+    @Value("${dev.service.port}")
+    private String dev_service_port;
 
     @Bean
     public ConfigServiceSdkClient configServiceSdkClient() {
         return new ConfigServiceSdkClientImpl(config_service_host, Integer.parseInt(config_service_port), 2);
+    }
+
+    @Bean
+    public DevServiceSdkClient devServiceSdkClient() {
+        return new DevServiceSdkClientImpl(dev_service_host, Integer.parseInt(dev_service_port), 2);
     }
 
     @Bean

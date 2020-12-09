@@ -10,6 +10,7 @@ import com.tnd.pw.action.common.representations.TodoRepresentation;
 import com.tnd.pw.action.common.requests.ActionRequest;
 import com.tnd.pw.action.common.requests.UserRequest;
 import com.tnd.pw.action.common.utils.RepresentationBuilder;
+import com.tnd.pw.action.runner.config.ActionConfig;
 import com.tnd.pw.action.runner.exception.NoPermissionException;
 import com.tnd.pw.action.runner.service.TodoServiceHandler;
 import com.tnd.pw.action.todos.constants.AssignState;
@@ -21,6 +22,7 @@ import com.tnd.pw.action.todos.exception.InconsistentStateException;
 import com.tnd.pw.action.todos.exception.TodoAssignNotFoundException;
 import com.tnd.pw.action.todos.exception.TodoNotFoundException;
 import com.tnd.pw.action.todos.service.TodoService;
+import com.tnd.pw.development.sdk.DevServiceSdkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class TodoServiceHandlerImpl implements TodoServiceHandler {
@@ -37,6 +41,8 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
     private TodoService todoService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private DevServiceSdkClient devServiceSdkClient;
 
     @Override
     public TodoRepresentation addTodo(ActionRequest request) throws DBServiceException {
@@ -65,6 +71,8 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
                 todoAssigns.add(todoAssign);
             }
         }
+
+        notifyDev(todo.getBelongId());
         return RepresentationBuilder.buildTodoRep(todo,todoAssigns);
     }
 
@@ -74,12 +82,16 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
             TodoEntity todoEntity = todoService.getTodo(TodoEntity.builder().id(request.getId()).build()).get(0);
             todoService.removeTodoAssign(TodoAssignEntity.builder().todoId(request.getId()).build());
             todoService.removeTodo(todoEntity);
+
+            notifyDev(todoEntity.getBelongId());
             return getTodos(todoEntity.getBelongId());
         } else if(request.getBelongId()!= null) {
             List<TodoEntity> todos = todoService.getTodo(TodoEntity.builder().belongId(request.getBelongId()).build());
             List<Long> todoIds = todos.stream().map(TodoEntity::getId).collect(Collectors.toList());
             todoService.removeTodoAssignByTodoIds(todoIds);
             todoService.removeTodo(TodoEntity.builder().belongId(request.getBelongId()).build());
+
+            notifyDev(request.getBelongId());
         }
         return null;
     }
@@ -229,6 +241,8 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
             );
         } catch (TodoAssignNotFoundException e) {
         }
+
+        notifyDev(todoEntity.getBelongId());
         return RepresentationBuilder.buildTodoRep(todoEntity, assignEntities);
     }
 
@@ -277,6 +291,7 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
             todoService.updateTodo(todoEntity);
         }
 
+        notifyDev(todoEntity.getBelongId());
         return RepresentationBuilder.buildTodoRep(todoEntity, assignEntities);
     }
 
@@ -308,4 +323,7 @@ public class TodoServiceHandlerImpl implements TodoServiceHandler {
         }
     }
 
+    public void notifyDev(Long featureId) {
+        ActionConfig.executor.execute(() -> devServiceSdkClient.calculateDev(featureId));
+    }
 }

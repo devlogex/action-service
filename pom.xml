@@ -27,6 +27,7 @@
         <dbservice.version>1.0-SNAPSHOT</dbservice.version>
         <action.version>1.0-SNAPSHOT</action.version>
         <config.version>1.0-SNAPSHOT</config.version>
+        <dev.version>1.0-SNAPSHOT</dev.version>
         <lombok.version>1.18.12</lombok.version>
         <spring.version>5.2.6.RELEASE</spring.version>
     </properties>
@@ -117,6 +118,11 @@
                 <groupId>com.tnd.dbservice</groupId>
                 <artifactId>sdk</artifactId>
                 <version>${dbservice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tnd.pw.development</groupId>
+                <artifactId>sdk</artifactId>
+                <version>${dev.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
